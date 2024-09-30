@@ -23,6 +23,8 @@ knitr::opts_chunk$set(message = FALSE,
 
 ```{r}
 
+# install.packages("dplyr")
+
 library(dplyr)
 library(tidyr)
 library(readr)
@@ -58,7 +60,116 @@ Clean the demographics data so that summaries of age and gender can be made in t
 
 ```{r}
 
-#dat_age_gender <- data_demographics_raw 
+# assignment
+# <- 
+# x <- y
+# = 
+# x = y
+
+# explanation of the pipe(s)
+
+# %>% # tidyverse
+  
+# |> # base R version
+  
+# dat_age_gender <- data_demographics_raw %>%
+#   rename(date_time = date) %>%
+#   mutate(group = group + 1)  
+
+# dat_age_gender <- data_demographics_raw |>
+#   rename(date_time = date) |>
+#   mutate(group = group + 1) 
+
+# colnames(dat_age_gender)
+
+# dat_age_gender <- 
+#   select(data_demographics_raw, subject, trialcode, response)
+# 
+# dat_age_gender <- 
+#   select(.data = data_demographics_raw, subject, trialcode, response)
+
+# dat_age_gender <- data_demographics_raw |>
+#   rename(boobleborb = subject, item = trialcode) |>
+#   select(boobleborb, item, response)
+
+# dat_age_gender <- data_demographics_raw |>
+#   select(subject, trialcode, response) |>
+#   rename(unique_id = subject, item = trialcode)
+# 
+# temp <- dat_age_gender |>
+#   filter(item == "age")
+
+# # wont work, as age isn't a defined object
+# temp <- dat_age_gender |>
+#   filter(item == age)
+
+# # there are much more flexible ways of doing 'string matching'
+# temp <- dat_age_gender |>
+#   filter(item %in% c("age", "Age", "AGE")) # any item of this vector
+# 
+# temp <- dat_age_gender |>
+#   filter(item == "age" | 
+#            item == "Age") # any of these
+# 
+# # | # or operator
+# # & # and operator
+# 
+# library(stringr)
+# temp <- dat_age_gender |>
+#   filter(str_detect(item, "age"))
+
+# # wrangle the demographics data out of the raw
+# dat_age_gender <- data_demographics_raw |>
+#   # rename for clarity
+#   rename(unique_id = subject, item = trialcode) |>
+#   # select useful columns
+#   select(unique_id, item, response) |>
+#   # retain rows that we need
+#   filter(item == "age")
+
+# temp <- dat_age_gender |>
+#   distinct(response)
+# 
+# 
+# # check data type for each column
+# sapply(dat_age_gender, class)
+
+
+# temp2 <- dat_age_gender |>
+#   # mutate allows you to create or change variables
+#   mutate(unique_id = unique_id * 2)
+
+
+library(stringr)
+
+# # more generic, but puts more trust in your understanding chatGPT
+# temp2 <- dat_age_gender |>
+#   mutate(response = str_remove_all(response, "\\D"),
+#          response = na_if(response, ""))
+# 
+# 
+# str_remove_all("twenty", "\\D")
+# str_remove_all("22.5", "\\D")
+
+
+# # more manual
+# temp2 <- dat_age_gender |>
+#   mutate(response = ifelse(response %in% c("old", "lol", ""), NA, response))
+
+
+
+# wrangle the demographics data out of the raw
+dat_age_gender <- data_demographics_raw |>
+  # rename for clarity
+  rename(unique_id = subject, item = trialcode) |>
+  # select useful columns
+  select(unique_id, item, response) |>
+  # retain rows that we need
+  filter(item == "age") |>
+  # remove non numbers from age
+  mutate(response = str_remove_all(response, "\\D"),
+         response = na_if(response, ""),
+         response = as.numeric(response))
 
 ```
 
