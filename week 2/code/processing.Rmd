@@ -157,7 +157,6 @@ library(stringr)
 #   mutate(response = ifelse(response %in% c("old", "lol", ""), NA, response))
 
 
-
 # wrangle the demographics data out of the raw
 dat_age_gender <- data_demographics_raw |>
   # rename for clarity
@@ -166,8 +165,8 @@ dat_age_gender <- data_demographics_raw |>
   select(unique_id, item, response) |>
   # retain rows that we need
   filter(item == "age") |>
-  # remove non numbers from age
-  mutate(response = str_remove_all(response, "\\D"),
+  # remove non-numbers or decimals from age
+  mutate(response = str_remove_all(response, "[^\\d.]"),  # retains only digits and decimal points
          response = na_if(response, ""),
          response = as.numeric(response))
 
